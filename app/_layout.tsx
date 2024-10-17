@@ -2,28 +2,18 @@ import { Slot } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
+import { useAuth } from "../src/hooks/useAuth";
 
 export default function Layout() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  useEffect(() => {
-    // Simulación de chequeo de autenticación
-    const checkAuth = async () => {
-      // Verifica si el usuario tiene un token válido
-      const userToken = null; // Reemplaza con lógica real de token
-      setIsAuthenticated(!!userToken);
-      setLoading(false);
-    };
-
-    checkAuth();
-  }, []);
+  const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
     if (!loading) {
       if (!isAuthenticated) {
         router.replace("/auth/login");
+      } else {
+        router.replace("/home");
       }
     }
   }, [loading, isAuthenticated]);
@@ -36,5 +26,6 @@ export default function Layout() {
     );
   }
 
+  // El Slot siempre debe ser renderizado
   return <Slot />;
 }

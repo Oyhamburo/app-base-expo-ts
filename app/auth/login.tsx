@@ -1,40 +1,57 @@
 import { useState } from "react";
-import { View, Text, TextInput, Button, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  ActivityIndicator,
+  Pressable,
+} from "react-native";
 import { Link, useRouter } from "expo-router";
+import { useAuth } from "../../src/hooks/useAuth";
 
 export default function Login() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login, loading } = useAuth(); // Usar el hook
+  const router = useRouter();
 
-  const handleLogin = () => {
-    // Lógica de autenticación
+  const handleLogin = async () => {
     if (email && password) {
-      // Simulación de login exitoso
-      router.replace("/home");
+      try {
+        await login(email, password);
+        router.replace("/home");
+      } catch (error) {
+        console.error("Error en el inicio de sesión", error);
+      }
     }
   };
 
   return (
-    <View className="items-center justify-center flex-1 p-4">
-      <Text className="mb-4 text-2xl font-bold">Login</Text>
+    <View className="flex-1 justify-center items-center p-4">
+      <Text className="text-2xl font-bold mb-4">Login</Text>
       <TextInput
-        className="w-full p-2 mb-4 border"
+        className="border p-2 mb-4 w-full"
         placeholder="Email"
         onChangeText={setEmail}
         value={email}
       />
       <TextInput
-        className="w-full p-2 mb-4 border"
+        className="border p-2 mb-4 w-full"
         placeholder="Password"
         secureTextEntry
         onChangeText={setPassword}
         value={password}
       />
-      <Button title="Login" onPress={handleLogin} />
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <Button title="Login" onPress={handleLogin} />
+      )}
+
       <Link asChild href="/auth/register">
         <Pressable>
-          <Text className="mt-4 text-blue-500">Register</Text>
+          <Text className="text-blue-500 mt-4">Registrarse</Text>
         </Pressable>
       </Link>
     </View>
